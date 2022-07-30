@@ -1,5 +1,6 @@
 package com.LRFLEW.register.payment.forChestShop;
 
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -18,7 +19,7 @@ public interface Method {
      * <pre>
      *  if(method.getName().equalsIgnoreCase("iConomy"))
      *   iConomy plugin = ((iConomy)method.getPlugin());</pre>
-     * 
+     *
      * @return <code>Object</code>
      * @see #getName()
      * @see #getVersion()
@@ -38,11 +39,11 @@ public interface Method {
      * @return <code>String</code> Plugin version.
      */
     public String getVersion();
-    
+
     /**
      * Returns the amount of decimal places that get stored
      * NOTE: it will return -1 if there is no rounding
-     * 
+     *
      * @return <code>int</code> for each decimal place
      */
     public int fractionalDigits();
@@ -69,7 +70,7 @@ public interface Method {
      * @return <code>boolean</code>
      * @see #hasBanks
      */
-    public boolean hasBank(String bank);
+    public boolean hasBank(String bank, World world);
 
     /**
      * Determines the existence of an account via name.
@@ -77,7 +78,7 @@ public interface Method {
      * @param name Account name
      * @return <code>boolean</code>
      */
-    public boolean hasAccount(String name);
+    public boolean hasAccount(String name, World world);
 
     /**
      * Check to see if an account <code>name</code> is tied to a <code>bank</code>.
@@ -86,7 +87,7 @@ public interface Method {
      * @param name Account name
      * @return <code>boolean</code>
      */
-    public boolean hasBankAccount(String bank, String name);
+    public boolean hasBankAccount(String bank, String name, World world);
 
     /**
      * Returns a <code>MethodAccount</code> class for an account <code>name</code>.
@@ -94,7 +95,7 @@ public interface Method {
      * @param name Account name
      * @return <code>MethodAccount</code> <em>or</em>  <code>Null</code>
      */
-    public MethodAccount getAccount(String name);
+    public MethodAccount getAccount(String name, World world);
 
 
     /**
@@ -104,7 +105,7 @@ public interface Method {
      * @param name Account name
      * @return <code>MethodBankAccount</code> <em>or</em>  <code>Null</code>
      */
-    public MethodBankAccount getBankAccount(String bank, String name);
+    public MethodBankAccount getBankAccount(String bank, String name, World world);
 
     /**
      * Checks to verify the compatibility between this Method and a plugin.
@@ -126,16 +127,16 @@ public interface Method {
      * Contains Calculator and Balance functions for Accounts.
      */
     public interface MethodAccount {
-        public double balance();
-        public boolean set(double amount);
-        public boolean add(double amount);
-        public boolean subtract(double amount);
-        public boolean multiply(double amount);
-        public boolean divide(double amount);
-        public boolean hasEnough(double amount);
-        public boolean hasOver(double amount);
-        public boolean hasUnder(double amount);
-        public boolean isNegative();
+        public double balance(World world);
+        public boolean set(double amount, World world);
+        public boolean add(double amount, World world);
+        public boolean subtract(double amount, World world);
+        public boolean multiply(double amount, World world);
+        public boolean divide(double amount, World world);
+        public boolean hasEnough(double amount, World world);
+        public boolean hasOver(double amount, World world);
+        public boolean hasUnder(double amount, World world);
+        public boolean isNegative(World world);
         public boolean remove();
 
         @Override

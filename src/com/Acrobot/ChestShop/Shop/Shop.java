@@ -2,6 +2,7 @@ package com.Acrobot.ChestShop.Shop;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Chests.ChestObject;
+import com.Acrobot.ChestShop.Chests.MinecraftChest;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
@@ -10,6 +11,7 @@ import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uInventory;
 import com.Acrobot.ChestShop.Utils.uSign;
+import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +29,8 @@ public class Shop {
     public final float sellPrice;
     public final String owner;
 
+    public final World world;
+
     public Shop(ChestObject chest, boolean buy, Sign sign, ItemStack... itemStacks) {
         this.stock = itemStacks[0];
         this.durability = stock.getDurability();
@@ -35,6 +39,7 @@ public class Shop {
         this.sellPrice = (!buy ? uSign.sellPrice(sign.getLine(2)) : -1);
         this.owner = sign.getLine(0);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
+        this.world = ((MinecraftChest) chest).getMainChest().getWorld(); //Multi-world Support
     }
 
     public void buy(Player player) {
@@ -51,7 +56,7 @@ public class Shop {
             return;
         }
         String playerName = player.getName();
-        if (!Economy.hasEnough(playerName, buyPrice)) {
+        if (!Economy.hasEnough(playerName, buyPrice, world)) {
             player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_MONEY));
             return;
         }
@@ -70,9 +75,9 @@ public class Shop {
         }
 
         String account = getOwnerAccount();
-        if (!account.isEmpty() && Economy.hasAccount(account)) Economy.add(account, buyPrice);
+        if (!account.isEmpty() && Economy.hasAccount(account, world)) Economy.add(account, buyPrice, world);
 
-        Economy.substract(playerName, buyPrice);
+        Economy.substract(playerName, buyPrice, world);
 
         if (!isAdminShop()) chest.removeItem(stock, durability, stockAmount);
 
@@ -113,9 +118,9 @@ public class Shop {
         }
 
         String account = getOwnerAccount();
-        boolean accountExists = !account.isEmpty() && Economy.hasAccount(account);
+        boolean accountExists = !account.isEmpty() && Economy.hasAccount(account, world);
 
-        if (accountExists && !Economy.hasEnough(account, sellPrice)) {
+        if (accountExists && !Economy.hasEnough(account, sellPrice, world)) {
             player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_MONEY_SHOP));
             return;
         }
@@ -130,10 +135,10 @@ public class Shop {
         }
 
 
-        if (accountExists) Economy.substract(account, sellPrice);
+        if (accountExists) Economy.substract(account, sellPrice, world);
         if (!isAdminShop()) chest.addItem(stock, stockAmount);
 
-        Economy.add(player.getName(), sellPrice);
+        Economy.add(player.getName(), sellPrice, world);
 
         String materialName = stock.getType().name();
         String formatedBalance = Economy.formatBalance(sellPrice);

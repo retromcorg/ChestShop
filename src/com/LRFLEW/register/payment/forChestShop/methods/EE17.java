@@ -7,6 +7,7 @@ import com.earth2me.essentials.api.NoLoanPermittedException;
 import com.earth2me.essentials.api.UserDoesNotExistException;
 
 
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -46,24 +47,24 @@ public class EE17 implements Method {
         return false;
     }
 
-    public boolean hasBank(String bank) {
+    public boolean hasBank(String bank, World world) {
         return false;
     }
 
-    public boolean hasAccount(String name) {
+    public boolean hasAccount(String name, World world) {
         return Economy.playerExists(name);
     }
 
-    public boolean hasBankAccount(String bank, String name) {
+    public boolean hasBankAccount(String bank, String name, World world) {
         return false;
     }
 
-    public MethodAccount getAccount(String name) {
-        if(!hasAccount(name)) return null;
+    public MethodAccount getAccount(String name, World world) {
+        if(!hasAccount(name, world)) return null;
         return new EEcoAccount(name);
     }
 
-    public MethodBankAccount getBankAccount(String bank, String name) {
+    public MethodBankAccount getBankAccount(String bank, String name, World world) {
         return null;
     }
 	
@@ -85,7 +86,7 @@ public class EE17 implements Method {
             this.name = name;
         }
 
-        public double balance() {
+        public double balance(World world) {
             Double balance = 0.0;
 
             try {
@@ -97,7 +98,7 @@ public class EE17 implements Method {
             return balance;
         }
 
-        public boolean set(double amount) {
+        public boolean set(double amount, World world) {
             try {
                 Economy.setMoney(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -111,7 +112,7 @@ public class EE17 implements Method {
             return true;
         }
 
-        public boolean add(double amount) {
+        public boolean add(double amount, World world) {
             try {
                 Economy.add(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -125,7 +126,7 @@ public class EE17 implements Method {
             return true;
         }
 
-        public boolean subtract(double amount) {
+        public boolean subtract(double amount, World world) {
             try {
                 Economy.subtract(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -139,7 +140,7 @@ public class EE17 implements Method {
             return true;
         }
 
-        public boolean multiply(double amount) {
+        public boolean multiply(double amount, World world) {
             try {
                 Economy.multiply(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -153,7 +154,7 @@ public class EE17 implements Method {
             return true;
         }
 
-        public boolean divide(double amount) {
+        public boolean divide(double amount, World world) {
             try {
                 Economy.divide(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -167,7 +168,7 @@ public class EE17 implements Method {
             return true;
         }
 
-        public boolean hasEnough(double amount) {
+        public boolean hasEnough(double amount, World world) {
             try {
                 return Economy.hasEnough(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -177,7 +178,7 @@ public class EE17 implements Method {
             return false;
         }
 
-        public boolean hasOver(double amount) {
+        public boolean hasOver(double amount, World world) {
             try {
                 return Economy.hasMore(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -187,7 +188,7 @@ public class EE17 implements Method {
             return false;
         }
 
-        public boolean hasUnder(double amount) {
+        public boolean hasUnder(double amount, World world) {
             try {
                 return Economy.hasLess(name, amount);
             } catch (UserDoesNotExistException ex) {
@@ -197,7 +198,7 @@ public class EE17 implements Method {
             return false;
         }
 
-        public boolean isNegative() {
+        public boolean isNegative( World world) {
             try {
                 return Economy.isNegative(name);
             } catch (UserDoesNotExistException ex) {

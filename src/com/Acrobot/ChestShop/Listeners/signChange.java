@@ -111,13 +111,13 @@ public class signChange extends BlockListener {
         float shopCreationPrice = Config.getFloat(Property.SHOP_CREATION_PRICE);
         boolean paid = shopCreationPrice != 0 && !isAdminShop;
         if (paid) {
-            if (!Economy.hasEnough(player.getName(), shopCreationPrice)) {
+            if (!Economy.hasEnough(player.getName(), shopCreationPrice, event.getBlock().getWorld())) {
                 player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_MONEY));
                 dropSign(event);
                 return;
             }
 
-            Economy.substract(player.getName(), shopCreationPrice);
+            Economy.substract(player.getName(), shopCreationPrice, event.getBlock().getWorld());
         }
 
         if (Config.getBoolean(Property.PROTECT_SIGN_WITH_LWC)) {

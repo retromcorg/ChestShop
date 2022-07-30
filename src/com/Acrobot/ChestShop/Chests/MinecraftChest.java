@@ -93,4 +93,9 @@ public class MinecraftChest implements ChestObject {
     private static int removeItem(ItemStack item, short durability, int amount, Chest chest) {
         return uInventory.remove(chest.getInventory(), item, amount, durability);
     }
+
+    public Chest getMainChest() {
+        return main;
+    }
+
 }
