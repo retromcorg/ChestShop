@@ -30,8 +30,10 @@ import java.util.HashMap;
  */
 public class playerInteract extends PlayerListener {
 
-    private static final HashMap<Player, Long> lastTransactionTime = new HashMap<Player, Long>(); //Last player's transaction
-    private static final int interval = 100;//Minimal interval between transactions
+    private static final HashMap<Player, Long> lastTransactionTimeChestShop = new HashMap<Player, Long>(); //Last player's transaction
+    private static final int intervalChestShop = 100; //Minimal interval between transactions
+    private static final HashMap<Player, Long> lastTransactionTimeRedstoneSign = new HashMap<Player, Long>();
+    private static final int intervalRedstoneSign = 800;
 
 
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -53,13 +55,28 @@ public class playerInteract extends PlayerListener {
         if (!uSign.isSign(block)) return; //It's not a sign!
         Sign sign = (Sign) block.getState();
 
-        if (!uSign.isValid(sign) || !enoughTimeHasPassed(player) || player.isSneaking()) return;
+        if (!uSign.isValid(sign) || player.isSneaking()) return;
 
-        lastTransactionTime.put(player, System.currentTimeMillis());
+        if (uSign.isRedstoneSign(sign)) {
+            if (!enoughTimeHasPassedRedstoneSign(player)) {
+                return;
+            }
+            else{
+                lastTransactionTimeRedstoneSign.put(player, System.currentTimeMillis());
+            }
+        }
+        else{
+            if (!enoughTimeHasPassedChestShop(player)) {
+                return;
+            }
+            else{
+                lastTransactionTimeChestShop.put(player, System.currentTimeMillis());
+            }
+        }
 
         if (action == Action.RIGHT_CLICK_BLOCK) event.setCancelled(true);
 
-        if (uLongName.stripName(player.getName()).equals(sign.getLine(0)) && (action != Action.LEFT_CLICK_BLOCK || !Config.getBoolean(Property.ALLOW_LEFT_CLICK_DESTROYING))) {
+        if (!uSign.isRedstoneSign(sign) && uLongName.stripName(player.getName()).equals(sign.getLine(0)) && (action != Action.LEFT_CLICK_BLOCK || !Config.getBoolean(Property.ALLOW_LEFT_CLICK_DESTROYING))) {
             showChestGUI(player, block);
             return;
         }
@@ -71,15 +88,24 @@ public class playerInteract extends PlayerListener {
 
         Action buy = (Config.getBoolean(Property.REVERSE_BUTTONS) ? Action.LEFT_CLICK_BLOCK : Action.RIGHT_CLICK_BLOCK);
 
-        if (action == buy) {
+        if (uSign.isRedstoneSign(sign)){
+            if (action == buy) {
+                ShopManagement.activate(sign, player);
+            }
+        }
+        else if (action == buy) {
             ShopManagement.buy(sign, player);
         } else {
             ShopManagement.sell(sign, player);
         }
     }
 
-    private static boolean enoughTimeHasPassed(Player player) {
-        return !lastTransactionTime.containsKey(player) || (System.currentTimeMillis() - lastTransactionTime.get(player)) >= interval;
+    private static boolean enoughTimeHasPassedChestShop(Player player) {
+        return !lastTransactionTimeChestShop.containsKey(player) || (System.currentTimeMillis() - lastTransactionTimeChestShop.get(player)) >= intervalChestShop;
+    }
+
+    private static boolean enoughTimeHasPassedRedstoneSign(Player player) {
+        return !lastTransactionTimeRedstoneSign.containsKey(player) || (System.currentTimeMillis() - lastTransactionTimeRedstoneSign.get(player)) >= intervalRedstoneSign;
     }
 
     private static boolean hasAdminPermissions(Player player) {
