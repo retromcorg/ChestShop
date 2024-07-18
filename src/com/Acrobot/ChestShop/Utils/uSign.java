@@ -11,11 +11,18 @@ import java.util.regex.Pattern;
  * @author Acrobot
  */
 public class uSign {
-    private static final Pattern[] patterns = {
+    private static final Pattern[] patterns = { // patterns for chest shop
             Pattern.compile("^$|^\\w.+$"),
             Pattern.compile("[0-9]+"),
             Pattern.compile(".+"),
             Pattern.compile("[\\w :]+")
+    };
+
+    private static final Pattern[] redstoneSignPatterns = { // patterns for redstone sign
+            Pattern.compile("^$|^\\w.+$"),
+            Pattern.compile("^$"), // Requires an empty string
+            Pattern.compile(".+"),
+            Pattern.compile("^\\[Activate\\]$") // Requires '[Activate]'
     };
 
     public static boolean isSign(Block block) {
@@ -32,16 +39,36 @@ public class uSign {
 
     public static boolean isValid(String[] line) {
         try {
-            return isValidPreparedSign(line) && (line[2].contains("B") || line[2].contains("S"));
+            boolean validChestShop = isValidPreparedSign(line) && (line[2].contains("B") || line[2].contains("S"));
+            boolean validRedstoneSign = isValidPreparedRedstoneSign(line) && line[2].contains("B");
+            return validChestShop || validRedstoneSign;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean isRedstoneSign(Sign sign) {
+        return isRedstoneSign(sign.getLines());
+    }
+
+    public static boolean isRedstoneSign(String[] line) {
+        return line[3].equals("[Activate]");
     }
 
     public static boolean isValidPreparedSign(String[] lines) {
         try {
             boolean toReturn = true;
             for (int i = 0; i < 4 && toReturn; i++) toReturn = patterns[i].matcher(lines[i]).matches();
+            return toReturn && lines[2].split(":").length <= 2;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidPreparedRedstoneSign(String[] lines) {
+        try {
+            boolean toReturn = true;
+            for (int i = 0; i < 4 && toReturn; i++) toReturn = redstoneSignPatterns[i].matcher(lines[i]).matches();
             return toReturn && lines[2].split(":").length <= 2;
         } catch (Exception e) {
             return false;
