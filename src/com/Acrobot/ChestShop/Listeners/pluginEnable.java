@@ -4,12 +4,9 @@ import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Economy;
 import com.Acrobot.ChestShop.Items.Odd;
 import com.Acrobot.ChestShop.Permission;
-import com.Acrobot.ChestShop.Protection.Plugins.DeadboltPlugin;
 import com.Acrobot.ChestShop.Protection.Plugins.LWCplugin;
-import com.Acrobot.ChestShop.Protection.Plugins.LockettePlugin;
 import com.Acrobot.ChestShop.Protection.Security;
 import com.LRFLEW.register.payment.forChestShop.Methods;
-import com.daemitus.deadbolt.Deadbolt;
 import com.griefcraft.lwc.LWCPlugin;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import info.somethingodd.bukkit.OddItem.OddItem;
@@ -17,7 +14,6 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.yi.acru.bukkit.Lockette.Lockette;
 
 /**
  * @author Acrobot
@@ -46,14 +42,6 @@ public class pluginEnable extends ServerListener {
             if (LWCplugin.lwc != null) return;
             LWCplugin.setLWC(((LWCPlugin) plugin).getLWC());
             Security.protection = new LWCplugin();
-        } else if (name.equals("Lockette")) {
-            if (LockettePlugin.lockette != null) return;
-            LockettePlugin.lockette = (Lockette) plugin;
-            Security.protection = new LockettePlugin();
-        } else if (name.equals("Deadbolt")) {
-            if (DeadboltPlugin.deadbolt != null) return;
-            DeadboltPlugin.deadbolt = (Deadbolt) plugin;
-            Security.protection = new DeadboltPlugin();
         } else if (name.equals("OddItem")) {
             if (Odd.oddItem != null) return;
             Odd.oddItem = (OddItem) plugin;
