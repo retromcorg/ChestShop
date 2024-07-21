@@ -10,7 +10,6 @@ import com.Acrobot.ChestShop.Items.Items;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uBlock;
-import com.Acrobot.ChestShop.Utils.uInventory;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,6 +68,13 @@ public class ShopManagement {
             return;
         }
 
+        Block attachedBlock = sign.getBlock().getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace());
+
+        if (!HasRedstoneTorch(attachedBlock)) {
+            player.sendMessage(Config.getLocal(Language.SIGN_NOT_CONNECTED));
+            return;
+        }
+
         String account = getOwnerAccount(owner);
         if (!account.isEmpty() && Economy.hasAccount(account, world)) Economy.add(account, buyPrice, world);
 
@@ -89,7 +95,6 @@ public class ShopManagement {
                     .replace("%price", formattedPrice), owner);
         }
 
-        Block attachedBlock = sign.getBlock().getRelative(((org.bukkit.material.Sign) sign.getData()).getAttachedFace());
         powerSingleAdjacent(attachedBlock);
     }
 
@@ -109,6 +114,21 @@ public class ShopManagement {
                 break;
             }
         }
+    }
+
+    private static boolean HasRedstoneTorch(Block block) {
+        final BlockFace[] adjacentFaces = {
+                BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
+        };
+
+        for (BlockFace face : adjacentFaces) {
+            Block adjacentBlock = block.getRelative(face);
+            if (adjacentBlock.getType() == Material.REDSTONE_TORCH_ON) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static String getOwnerAccount(String owner) {
