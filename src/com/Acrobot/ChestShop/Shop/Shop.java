@@ -39,7 +39,7 @@ public class Shop {
         this.sellPrice = (!buy ? uSign.sellPrice(sign.getLine(2)) : -1);
         this.owner = sign.getLine(0);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
-        this.world = ((MinecraftChest) chest).getMainChest().getWorld(); //Multi-world Support
+        this.world = sign.getWorld(); //Multi-world Support
     }
 
     public void buy(Player player) {
