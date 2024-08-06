@@ -32,7 +32,8 @@ public class signChange extends BlockListener {
         Block signBlock = event.getBlock();
         String[] line = event.getLines();
 
-        boolean isAlmostReady = uSign.isValidPreparedSign(line);
+        boolean isShopSign = uSign.isValidPreparedSign(line);
+        boolean isRedstoneSign = uSign.isValidPreparedRedstoneSign(line);
 
         Player player = event.getPlayer();
         ItemStack stock = Items.getItemStack(line[3]);
@@ -41,7 +42,7 @@ public class signChange extends BlockListener {
         boolean playerIsAdmin = Permission.has(player, Permission.ADMIN);
 
 
-        if (isAlmostReady) {
+        if (isShopSign) {
             if (mat == null) {
                 player.sendMessage(Config.getLocal(Language.INCORRECT_ITEM_ID));
                 dropSign(event);
@@ -52,8 +53,14 @@ public class signChange extends BlockListener {
                 dropSign(event);
                 return;
             }
+        } else if (isRedstoneSign) {
+            if (!canCreateShop(player, 1)) { // ID of 1 for stone
+                player.sendMessage(Config.getLocal(Language.YOU_CANNOT_CREATE_SHOP));
+                dropSign(event);
+                return;
+            }
         } else {
-            if (restrictedSign.isRestricted(event.getLines())) {
+           if (restrictedSign.isRestricted(event.getLines())) {
                 if (!playerIsAdmin) {
                     player.sendMessage(Config.getLocal(Language.ACCESS_DENIED));
                     dropSign(event);
@@ -67,7 +74,13 @@ public class signChange extends BlockListener {
 
         if (formatFirstLine(line[0], player)) event.setLine(0, uLongName.stripName(player.getName()));
 
-        String thirdLine = formatThirdLine(line[2]);
+        String thirdLine = null;
+        if (isShopSign) {
+            thirdLine = formatThirdLine(line[2]);
+        }
+        else if (isRedstoneSign) {
+            thirdLine = formatThirdLineRedstoneSign(line[2]);
+        }
         if (thirdLine == null) {
             dropSign(event);
             player.sendMessage(Config.getLocal(Language.YOU_CANNOT_CREATE_SHOP));
@@ -80,7 +93,16 @@ public class signChange extends BlockListener {
 
         boolean isAdminShop = uSign.isAdminShop(event.getLine(0));
         if (!isAdminShop) {
-            if (chest == null) {
+            if (isRedstoneSign) {
+                if (!playerIsAdmin) {
+                    if (!Security.canPlaceSign(player, signBlock)) {
+                        player.sendMessage(Config.getLocal(Language.ANOTHER_SHOP_DETECTED));
+                        dropSign(event);
+                        return;
+                    }
+                }
+            }
+            else if (chest == null) {
                 player.sendMessage(Config.getLocal(Language.NO_CHEST_DETECTED));
                 dropSign(event);
                 return;
@@ -142,6 +164,15 @@ public class signChange extends BlockListener {
     }
 
     private static String formatThirdLine(String thirdLine) {
+        String[] split = thirdLine.split(":");
+        if (uNumber.isFloat(split[0])) thirdLine = "B " + thirdLine;
+        if (split.length == 2 && uNumber.isFloat(split[1])) thirdLine = thirdLine + " S";
+        if (thirdLine.length() > 15) thirdLine = thirdLine.replace(" ", "");
+
+        return (thirdLine.length() > 15 ? null : thirdLine);
+    }
+
+    private static String formatThirdLineRedstoneSign(String thirdLine) {
         String[] split = thirdLine.split(":");
         if (uNumber.isFloat(split[0])) thirdLine = "B " + thirdLine;
         if (split.length == 2 && uNumber.isFloat(split[1])) thirdLine = thirdLine + " S";
