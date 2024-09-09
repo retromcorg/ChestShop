@@ -1,6 +1,7 @@
 package com.Acrobot.ChestShop;
 
 import com.Acrobot.ChestShop.Commands.ItemInfo;
+import com.Acrobot.ChestShop.Commands.ShopHistory;
 import com.Acrobot.ChestShop.Commands.Version;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.ConfigObject;
@@ -65,6 +66,7 @@ public class ChestShop extends JavaPlugin {
         //Register our commands!
         getCommand("iteminfo").setExecutor(new ItemInfo());
         getCommand("csVersion").setExecutor(new Version());
+        getCommand("shophistory").setExecutor(new ShopHistory());
 
         System.out.println('[' + getPluginName() + "] version " + getVersion() + " initialized!");
     }

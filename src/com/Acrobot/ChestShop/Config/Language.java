@@ -7,6 +7,8 @@ public enum Language {
     prefix("&a[Shop] &f"),
     iteminfo("&aItem Information:&f"),
 
+    INVALID_USAGE("Invalid usage: /shophistory [page number]"),
+
     ACCESS_DENIED("You don't have permission to do that!"),
 
     NOT_ENOUGH_MONEY("You don't have enough money!"),
@@ -41,8 +43,12 @@ public enum Language {
     SHOP_CREATED("Shop successfully created!"),
 
     NO_PERMISSION("You don't have permissions to do that!"),
-    INCORRECT_ITEM_ID("You have specified invalid item id!");
+    INCORRECT_ITEM_ID("You have specified invalid item id!"),
 
+    HISTORY_PAGE_X("Shop History: Page %page/%pagecount"),
+    PLEASE_SET_CONFIG_PARAMS_FOR_HISTORY("Please set LOG_TO_DATABASE and LOG_TO_FILE to 'true' in config.yml to enable this feature!"),
+
+    NO_ENTRIES_IN_HISTORY("You have no entries in your shop history!");
 
     private final String text;
 
