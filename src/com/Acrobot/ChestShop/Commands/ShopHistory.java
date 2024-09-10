@@ -5,6 +5,7 @@ import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Transaction;
+import com.Acrobot.ChestShop.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,39 +26,56 @@ public class ShopHistory implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (Config.getBoolean(Property.LOG_TO_DATABASE) && Config.getBoolean(Property.LOG_TO_FILE)) {
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player) && args.length == 0) {
                 sender.sendMessage(ChestShop.chatPrefix + "This command is unavailable to console!");
                 return true;
             }
-            Player shopOwner = (Player) sender;
+            int page = 1;
+            String playerName = sender.getName();
+
+            if (sender.isOp() || (sender instanceof Player && Permission.has((Player) sender, Permission.USER_VIEW_SHOP_HISTORY))) {
+                if (args.length > 0) {
+                    try {
+                        page = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException e) {
+                        if (!args[0].matches("[a-zA-Z0-9_]{3,16}")) {
+                            sender.sendMessage(ChatColor.RED + Language.INVALID_USAGE_ADMIN.toString());
+                            return true;
+                        }
+                        playerName = args[0];
+                        if (args.length > 1) {
+                            try {
+                                page = Integer.parseInt(args[1]);
+                            } catch (NumberFormatException f){
+                                page = 1;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (args.length > 0) {
+                    try {
+                        page = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(ChatColor.RED + Language.INVALID_USAGE.toString());
+                        return true;
+                    }
+                }
+            }
 
             EbeanServer db = ChestShop.getDB();
             List<Transaction> list;
-
-            list = db.find(Transaction.class).where().eq("shop_owner", shopOwner.getName()).findList();
+            list = db.find(Transaction.class).where().eq("lower(shop_owner)", playerName.toLowerCase()).findList();
             Collections.reverse(list);
 
             if (list.size() == 0) {
-                shopOwner.sendMessage(Config.getLocal(Language.NO_ENTRIES_IN_HISTORY));
+                sender.sendMessage(Config.getLocal(Language.NO_ENTRIES_IN_HISTORY));
                 return true;
-            }
-
-            int page;
-
-            if (args.length > 0) {
-                try {
-                    page = Integer.parseInt(args[0]);
-                } catch (NumberFormatException e) {
-                    shopOwner.sendMessage(ChatColor.RED + Language.INVALID_USAGE.toString());
-                    return true;
-                }
-            } else {
-                page = 1;
             }
 
             int pageCount = (int) Math.ceil((double) list.size() / 10);
             if (page <= pageCount) {
-                shopOwner.sendMessage(Config.getLocal(Language.HISTORY_PAGE_X)
+                sender.sendMessage(Config.getLocal(Language.HISTORY_PAGE_X)
                         .replace("%page%", String.valueOf(page))
                         .replace("%pagecount%", String.valueOf(pageCount)));
 
@@ -66,7 +84,7 @@ public class ShopHistory implements CommandExecutor {
                     Transaction entry = list.get(i);
                     if (i == page * 10 - 10 || entry.getSec() < list.get(i - 1).getSec()) {
                         String date = dateFormat.format(new Date(entry.getSec() * 1000L));
-                        shopOwner.sendMessage(ChatColor.GOLD + date + ":");
+                        sender.sendMessage(ChatColor.GOLD + date + ":");
                     }
                     String message =
                             (entry.isBuy() ? Config.getLocal(Language.SOMEBODY_BOUGHT_FROM_YOUR_SHOP)
@@ -78,7 +96,7 @@ public class ShopHistory implements CommandExecutor {
                                     .replace("%item", new ItemStack(entry.getItemID()).getType().name())
                                     .replace("%price", "$" + entry.getPrice());
 
-                    shopOwner.sendMessage(message);
+                    sender.sendMessage(message);
                 }
             }
             return true;
