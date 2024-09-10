@@ -8,6 +8,7 @@ public enum Language {
     iteminfo("&aItem Information:&f"),
 
     INVALID_USAGE("Invalid usage: /shophistory [page number]"),
+    INVALID_USAGE_ADMIN("Invalid usage: /shophistory <username> [page number]"),
 
     ACCESS_DENIED("You don't have permission to do that!"),
 
@@ -48,7 +49,7 @@ public enum Language {
     HISTORY_PAGE_X("Shop History: Page &c%page% &fof &c%pagecount%"),
     PLEASE_SET_CONFIG_PARAMS_FOR_HISTORY("Please set LOG_TO_DATABASE and LOG_TO_FILE to 'true' in config.yml to enable this feature!"),
 
-    NO_ENTRIES_IN_HISTORY("You have no entries in your shop history!");
+    NO_ENTRIES_IN_HISTORY("There are no entries in the transaction history!");
 
     private final String text;
 
