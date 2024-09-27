@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,9 +53,14 @@ public class Logging {
         transaction.setItemID(stock.getTypeId());
         transaction.setPrice((isBuying ? shop.buyPrice : shop.sellPrice));
         transaction.setSec(System.currentTimeMillis() / 1000);
-        transaction.setShopOwner(shop.owner);
-        transaction.setShopUser(player.getName());
+        transaction.setShopOwner(shop.ownerUUID);
+        transaction.setShopUser(player.getUniqueId());
 
         Queue.addToQueue(transaction);
+        //logToCSV(transaction);
+    }
+    //TODO
+    private static void logToCSV(UUID uuid, Transaction transaction) {
+
     }
 }
