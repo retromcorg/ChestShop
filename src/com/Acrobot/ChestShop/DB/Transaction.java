@@ -3,6 +3,7 @@ package com.Acrobot.ChestShop.DB;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -15,8 +16,8 @@ public class Transaction {
     private int id;
 
     private boolean buy;
-    private String shopOwner;
-    private String shopUser;
+    private UUID shopOwner;
+    private UUID shopUser;
     private int itemID;
     private int itemDurability;
     private int amount;
@@ -37,11 +38,11 @@ public class Transaction {
         return buy;
     }
 
-    public String getShopOwner() {
+    public UUID getShopOwner() {
         return shopOwner;
     }
 
-    public String getShopUser() {
+    public UUID getShopUser() {
         return shopUser;
     }
 
@@ -73,11 +74,11 @@ public class Transaction {
         this.buy = buy;
     }
 
-    public void setShopOwner(String shopOwner) {
+    public void setShopOwner(UUID shopOwner) {
         this.shopOwner = shopOwner;
     }
 
-    public void setShopUser(String shopUser) {
+    public void setShopUser(UUID shopUser) {
         this.shopUser = shopUser;
     }
 
