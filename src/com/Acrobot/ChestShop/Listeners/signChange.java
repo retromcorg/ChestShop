@@ -1,5 +1,6 @@
 package com.Acrobot.ChestShop.Listeners;
 
+import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
@@ -23,6 +24,8 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 /**
  * @author Acrobot
  */
@@ -31,7 +34,6 @@ public class signChange extends BlockListener {
     public void onSignChange(SignChangeEvent event) {
         Block signBlock = event.getBlock();
         String[] line = event.getLines();
-
         boolean isShopSign = uSign.isValidPreparedSign(line);
         boolean isRedstoneSign = uSign.isValidPreparedRedstoneSign(line);
 
@@ -72,7 +74,23 @@ public class signChange extends BlockListener {
             return;
         }
 
-        if (formatFirstLine(line[0], player)) event.setLine(0, uLongName.stripName(player.getName()));
+        UUID uuid;
+        if (formatFirstLine(line[0], player)) {
+            event.setLine(0, player.getName());
+            uuid = player.getUniqueId();
+        } else { // Admin logic
+            if (formatLongName(line[0])) {
+                String name = ChestShop.getUUIDCache().get16CharacterName(line[0].substring(1));
+                uuid = ChestShop.getUUIDCache().getUUIDFromUsername(name);
+                event.setLine(0, uLongName.stripName(name));
+            } else {
+                uuid = ChestShop.getUUIDCache().getUUIDFromUsername(line[0]);
+            }
+        }
+        if (uuid == null) {
+            uuid = player.getUniqueId();
+            event.setLine(0, player.getName());
+        }
 
         String thirdLine = null;
         if (isShopSign) {
@@ -149,7 +167,10 @@ public class signChange extends BlockListener {
             player.sendMessage(Config.getLocal(Language.PROTECTED_SHOP));
         }
 
-        uLongName.saveName(player.getName());
+        if (!isAdminShop) {
+            ChestShop.getShopCache().addPlayerShop(uuid, event.getBlock().getLocation());
+        }
+
         player.sendMessage(Config.getLocal(Language.SHOP_CREATED) + (paid ? " - " + Economy.formatBalance(shopCreationPrice) : ""));
     }
 
@@ -198,6 +219,10 @@ public class signChange extends BlockListener {
     private static boolean formatFirstLine(String line1, Player player) {
         return line1.isEmpty() ||
                 (!line1.equals(uLongName.stripName(player.getName())) && !Permission.has(player, Permission.ADMIN));
+    }
+
+    private static boolean formatLongName(String line1) {
+        return line1.startsWith("#") && line1.length() == 15;
     }
 
     private static void dropSign(SignChangeEvent event) {
