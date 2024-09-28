@@ -103,7 +103,8 @@ public class Shop {
                     .replace("%amount", String.valueOf(stockAmount))
                     .replace("%item", materialName)
                     .replace("%buyer", playerName)
-                    .replace("%price", formatedPrice));
+                    .replace("%price", formatedPrice)
+                    .replace("%you", "you"));
         }
     }
 
@@ -164,7 +165,8 @@ public class Shop {
                     .replace("%amount", String.valueOf(stockAmount))
                     .replace("%item", materialName)
                     .replace("%seller", player.getName())
-                    .replace("%price", formatedBalance));
+                    .replace("%price", formatedBalance)
+                    .replace("%you", "you"));
         }
     }
 
