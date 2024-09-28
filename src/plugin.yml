@@ -59,5 +59,3 @@ permissions:
     default: op
   ChestShop.mod:
     description: Allows user only to view other store chests, he can't destroy them or create an Admin Shop
-  ChestShop.user.viewshophistory:
-    description: Allows user to view other users' shop transaction history
