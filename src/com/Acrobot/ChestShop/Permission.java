@@ -13,7 +13,7 @@ public enum Permission {
     SELL_ID("ChestShop.shop.sell."),
     SELL("ChestShop.shop.sell"),
     ADMIN("ChestShop.admin"),
-    MOD("ChestShop.mod"),
+    MOD("ChestShop.mod");
 
     private final String permission;
 
