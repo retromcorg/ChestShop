@@ -1,5 +1,6 @@
 package com.Acrobot.ChestShop.Logging;
 
+import com.Acrobot.ChestShop.CSV.CSVFile;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Queue;
@@ -11,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +35,7 @@ public class Logging {
     public static void logTransaction(boolean isBuying, Shop shop, Player player) {
         log(player.getName() + (isBuying ? " bought " : " sold ") + shop.stockAmount + ' ' + shop.stock.getType() + " for " + (isBuying ? shop.buyPrice + " from " : shop.sellPrice + " to ") + shop.owner);
         if (Config.getBoolean(Property.LOG_TO_DATABASE) || Config.getBoolean(Property.GENERATE_STATISTICS_PAGE)) logToDatabase(isBuying, shop, player);
+        if (Config.getBoolean(Property.LOG_TO_CSV)) logToCSV(isBuying, shop, player);
     }
 
     public static void logActivation(Player player, String owner, float buyPrice) {
@@ -57,10 +58,23 @@ public class Logging {
         transaction.setShopUser(player.getUniqueId());
 
         Queue.addToQueue(transaction);
-        //logToCSV(transaction);
     }
     //TODO
-    private static void logToCSV(UUID uuid, Transaction transaction) {
+    private static void logToCSV(boolean isBuying, Shop shop, Player player) {
+        Transaction transaction = new Transaction();
 
+        transaction.setAmount(shop.stockAmount);
+        transaction.setBuy(isBuying);
+
+        ItemStack stock = shop.stock;
+
+        transaction.setItemDurability(stock.getDurability());
+        transaction.setItemID(stock.getTypeId());
+        transaction.setPrice((isBuying ? shop.buyPrice : shop.sellPrice));
+        transaction.setSec(System.currentTimeMillis() / 1000);
+        transaction.setShopUser(player.getUniqueId());
+
+        CSVFile csvFile = new CSVFile(shop.ownerUUID);
+        csvFile.addTransaction(transaction);
     }
 }
