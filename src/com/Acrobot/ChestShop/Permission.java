@@ -14,7 +14,6 @@ public enum Permission {
     SELL("ChestShop.shop.sell"),
     ADMIN("ChestShop.admin"),
     MOD("ChestShop.mod"),
-    USER_VIEW_SHOP_HISTORY("ChestShop.user.viewshophistory");
 
     private final String permission;
 
