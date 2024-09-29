@@ -71,4 +71,8 @@ public class CSVFile {
             throw new RuntimeException(e);
         }
     }
+
+    public static boolean exists(UUID uuid) {
+        return new File(ChestShop.folder + File.separator + "csv" + File.separator + uuid.toString() + ".csv").exists();
+    }
 }

@@ -27,7 +27,7 @@ public class ShopHistory implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!Config.getBoolean(Property.LOG_TO_CSV)) {
             if (sender.isOp() || sender instanceof Player && Permission.has((Player) sender, Permission.MOD)) {
-                sender.sendMessage(Language.HISTORY_DISABLED.toString());
+                sender.sendMessage(ChatColor.RED + Language.HISTORY_DISABLED.toString());
             }
             return true;
         }
@@ -64,9 +64,9 @@ public class ShopHistory implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + Language.PLAYER_NOT_FOUND.toString().replace("%player%", playerName));
             return true;
         }
-        List<Transaction> list = new CSVFile((ChestShop.getUUIDCache().getUUIDFromUsername(playerName))).getTransactions(entries);
 
-        if (list.size() == 0) {
+        List<Transaction> list;
+        if (!CSVFile.exists(uuid) || (list = new CSVFile(uuid).getTransactions(entries)).isEmpty()) {
             sender.sendMessage(Config.getLocal(Language.NO_ENTRIES_IN_HISTORY));
             return true;
         }
