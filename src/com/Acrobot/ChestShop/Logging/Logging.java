@@ -6,6 +6,7 @@ import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Queue;
 import com.Acrobot.ChestShop.DB.Transaction;
 import com.Acrobot.ChestShop.Shop.Shop;
+import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,8 +60,9 @@ public class Logging {
 
         Queue.addToQueue(transaction);
     }
-    //TODO
+
     private static void logToCSV(boolean isBuying, Shop shop, Player player) {
+        if (uSign.isAdminShop(shop.owner) || shop.ownerUUID == null) return;
         Transaction transaction = new Transaction();
 
         transaction.setAmount(shop.stockAmount);
