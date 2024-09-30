@@ -99,7 +99,7 @@ public class UUIDCache {
     }
 
     public String getUsernameFromUUID(UUID uuid) {
-        return uuidToUsernameMap.getOrDefault(uuid, "");
+        return uuidToUsernameMap.getOrDefault(uuid, null);
     }
 
     public boolean isPlayerKnown(UUID uuid) {

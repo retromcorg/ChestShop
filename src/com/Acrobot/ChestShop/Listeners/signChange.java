@@ -87,7 +87,7 @@ public class signChange extends BlockListener {
                 uuid = ChestShop.getUUIDCache().getUUIDFromUsername(line[0]);
             }
         }
-        if (uuid == null) {
+        if (uuid == null && !uSign.isAdminShop(event.getLine(0))) {
             uuid = player.getUniqueId();
             event.setLine(0, player.getName());
         }

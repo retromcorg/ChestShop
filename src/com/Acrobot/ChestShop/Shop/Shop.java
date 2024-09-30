@@ -10,6 +10,7 @@ import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uInventory;
 import com.Acrobot.ChestShop.Utils.uLocation;
+import com.Acrobot.ChestShop.Utils.uLongName;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -40,10 +41,13 @@ public class Shop {
         this.chest = chest;
         this.buyPrice = (buy ? uSign.buyPrice(sign.getLine(2)) : -1);
         this.sellPrice = (!buy ? uSign.sellPrice(sign.getLine(2)) : -1);
-        this.owner = uSign.isAdminShop(sign.getLine(0)) ? sign.getLine(0) : ChestShop.getShopCache().getUsernameFromShop(new uLocation(sign.getBlock().getLocation()));
+        String owner = ChestShop.getShopCache().getUsernameFromShop(new uLocation(sign.getBlock().getLocation()));
+        if (owner == null) owner = uLongName.getName(sign.getLine(0));
+        this.owner = owner;
         this.ownerUUID = uSign.isAdminShop(owner) ? null : ChestShop.getUUIDCache().getUUIDFromUsername(owner);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
         this.world = sign.getWorld(); //Multi-world Support
+        ChestShop.getShopCache().addPlayerShop(ownerUUID, sign.getBlock().getLocation());
     }
 
     public void buy(Player player) {
