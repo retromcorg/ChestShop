@@ -64,6 +64,7 @@ public class ShopHistory implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + Language.PLAYER_NOT_FOUND.toString().replace("%player%", playerName));
             return true;
         }
+        playerName = ChestShop.getUUIDCache().getUsernameFromUUID(uuid);
 
         List<Transaction> list;
         if (!CSVFile.exists(uuid) || (list = new CSVFile(uuid).getTransactions(entries)).isEmpty()) {
@@ -77,24 +78,29 @@ public class ShopHistory implements CommandExecutor {
                     .replace("%page%", String.valueOf(page))
                     .replace("%pagecount%", String.valueOf(pageCount)));
 
-            for (int i = page * 10 - 10;
-                 (i < page * 10) && i < list.size() && list.get(i) != null; i++) {
+            for (int i = page * 10 - 10; (i < page * 10) && i < list.size() && list.get(i) != null; i++) {
                 Transaction entry = list.get(i);
                 if (i == page * 10 - 10 || entry.getSec() < list.get(i - 1).getSec()) {
                     String date = dateFormat.format(new Date(entry.getSec() * 1000L));
                     sender.sendMessage(ChatColor.GOLD + date + ":");
                 }
-                String message =
-                        (entry.isBuy() ? Config.getLocal(Language.SOMEBODY_BOUGHT_FROM_YOUR_SHOP) : Config.getLocal(Language.SOMEBODY_SOLD_TO_YOUR_SHOP))
+                String message;
+
+                if (entry.getItemID() == 0 && entry.getItemDurability() == 0 && entry.getAmount() == 0) {
+                    message = Config.getLocal(Language.SOMEBODY_ACTIVATED_YOUR_SIGN)
+                            .replace("%buyer", ChestShop.getUUIDCache().getUsernameFromUUID(entry.getShopUser()))
+                            .replace("%price", "$" + entry.getPrice());
+                    message = !playerName.equalsIgnoreCase(sender.getName()) ?
+                            message.replace("%your", playerName + "'s") : message.replace("%your", "your");
+                } else {
+                    message = (entry.isBuy() ? Config.getLocal(Language.SOMEBODY_BOUGHT_FROM_YOUR_SHOP) : Config.getLocal(Language.SOMEBODY_SOLD_TO_YOUR_SHOP))
                             .replace("%seller", ChestShop.getUUIDCache().getUsernameFromUUID(entry.getShopUser()))
                             .replace("%buyer", ChestShop.getUUIDCache().getUsernameFromUUID(entry.getShopUser()))
                             .replace("%amount", String.valueOf(entry.getAmount()))
                             .replace("%item", new ItemStack(entry.getItemID()).getType().name())
                             .replace("%price", "$" + entry.getPrice());
-                if (!playerName.equalsIgnoreCase(sender.getName())) {
-                    message = message.replace("%you", playerName);
-                } else {
-                    message = message.replace("%you", "you");
+                    message = !playerName.equalsIgnoreCase(sender.getName()) ?
+                            message.replace("%you", playerName) : message.replace("%you", "you");
                 }
 
                 sender.sendMessage(message);

@@ -31,7 +31,7 @@ public enum Language {
     SOMEBODY_BOUGHT_FROM_YOUR_SHOP("%buyer bought %amount %item for %price from %you."),
 
     YOU_ACTIVATED_SIGN("You activated %owner's sign for %price."),
-    SOMEBODY_ACTIVATED_YOUR_SIGN("%buyer activated your sign for %price."),
+    SOMEBODY_ACTIVATED_YOUR_SIGN("%buyer activated %your sign for %price."),
     SIGN_NOT_CONNECTED("This shop is missing a redstone torch to activate."),
 
     YOU_SOLD_TO_SHOP("You sold %amount %item to %buyer for %price."),

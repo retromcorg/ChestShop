@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,8 +40,9 @@ public class Logging {
         if (Config.getBoolean(Property.LOG_TO_CSV)) logToCSV(isBuying, shop, player);
     }
 
-    public static void logActivation(Player player, String owner, float buyPrice) {
+    public static void logActivation(Player player, String owner, UUID ownerUUID, float buyPrice) {
         log(player.getName() + " activated " + owner + "'s sign for " + buyPrice);
+        if (Config.getBoolean(Property.LOG_TO_CSV)) logActivationToCSV(ownerUUID, player, buyPrice);
     }
 
     private static void logToDatabase(boolean isBuying, Shop shop, Player player) {
@@ -77,6 +79,22 @@ public class Logging {
         transaction.setShopUser(player.getUniqueId());
 
         CSVFile csvFile = new CSVFile(shop.ownerUUID);
+        csvFile.addTransaction(transaction);
+    }
+
+    private static void logActivationToCSV(UUID ownerUUID, Player player, float buyPrice) {
+        if (ownerUUID == null) return;
+        Transaction transaction = new Transaction();
+
+        transaction.setShopUser(player.getUniqueId());
+        transaction.setPrice(buyPrice);
+        transaction.setSec(System.currentTimeMillis() / 1000);
+        transaction.setBuy(true);
+        transaction.setItemID(0);
+        transaction.setItemDurability(0);
+        transaction.setAmount(0);
+
+        CSVFile csvFile = new CSVFile(ownerUUID);
         csvFile.addTransaction(transaction);
     }
 }

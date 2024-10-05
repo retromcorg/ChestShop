@@ -19,7 +19,7 @@ public class uSign {
     };
 
     private static final Pattern[] redstoneSignPatterns = { // patterns for redstone sign
-            Pattern.compile("^$|^\\w.+$"),
+            Pattern.compile("^$|^[#\\w].+$"),
             Pattern.compile("^$"), // Requires an empty string
             Pattern.compile(".+"),
             Pattern.compile("^\\[Activate\\]$") // Requires '[Activate]'

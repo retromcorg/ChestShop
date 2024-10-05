@@ -10,6 +10,8 @@ import com.Acrobot.ChestShop.Items.Items;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uBlock;
+import com.Acrobot.ChestShop.Utils.uLocation;
+import com.Acrobot.ChestShop.Utils.uLongName;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,6 +23,8 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -51,7 +55,8 @@ public class ShopManagement {
     public static void activate(Sign sign, Player player) {
         World world = sign.getWorld();
         float buyPrice = uSign.buyPrice(sign.getLine(2));
-        String owner = sign.getLine(0);
+        String owner = ChestShop.getShopCache().getUsernameFromShop(new uLocation(sign.getBlock().getLocation()));
+        if (owner == null) owner = uLongName.getName(sign.getLine(0));
         String playerName = player.getName();
 
         if (buyPrice == -1) {
@@ -87,11 +92,14 @@ public class ShopManagement {
                     .replace("%price", formattedPrice));
         }
 
-        Logging.logActivation(player, owner, buyPrice);
+        UUID ownerUUID = uSign.isAdminShop(owner) ? null : ChestShop.getUUIDCache().getUUIDFromUsername(owner);
+        ChestShop.getShopCache().addPlayerShop(ownerUUID, sign.getBlock().getLocation());
+        Logging.logActivation(player, owner, ownerUUID, buyPrice);
 
         if (Config.getBoolean(Property.SHOW_TRANSACTION_INFORMATION_OWNER)) {
             sendMessageToOwner(Config.getLocal(Language.SOMEBODY_ACTIVATED_YOUR_SIGN)
                     .replace("%buyer", playerName)
+                    .replace("%your", "your")
                     .replace("%price", formattedPrice), owner);
         }
 
