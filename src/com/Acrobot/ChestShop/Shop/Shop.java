@@ -2,7 +2,6 @@ package com.Acrobot.ChestShop.Shop;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Chests.ChestObject;
-import com.Acrobot.ChestShop.Chests.MinecraftChest;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
@@ -10,11 +9,15 @@ import com.Acrobot.ChestShop.Economy;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uInventory;
+import com.Acrobot.ChestShop.Utils.uLocation;
+import com.Acrobot.ChestShop.Utils.uLongName;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -28,6 +31,7 @@ public class Shop {
     public final float buyPrice;
     public final float sellPrice;
     public final String owner;
+    public final UUID ownerUUID;
 
     public final World world;
 
@@ -37,9 +41,13 @@ public class Shop {
         this.chest = chest;
         this.buyPrice = (buy ? uSign.buyPrice(sign.getLine(2)) : -1);
         this.sellPrice = (!buy ? uSign.sellPrice(sign.getLine(2)) : -1);
-        this.owner = sign.getLine(0);
+        String owner = ChestShop.getShopCache().getUsernameFromShop(new uLocation(sign.getBlock().getLocation()));
+        if (owner == null) owner = uLongName.getName(sign.getLine(0));
+        this.owner = owner;
+        this.ownerUUID = uSign.isAdminShop(owner) ? null : ChestShop.getUUIDCache().getUUIDFromUsername(owner);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
         this.world = sign.getWorld(); //Multi-world Support
+        ChestShop.getShopCache().addPlayerShop(ownerUUID, sign.getBlock().getLocation());
     }
 
     public void buy(Player player) {
@@ -99,7 +107,8 @@ public class Shop {
                     .replace("%amount", String.valueOf(stockAmount))
                     .replace("%item", materialName)
                     .replace("%buyer", playerName)
-                    .replace("%price", formatedPrice));
+                    .replace("%price", formatedPrice)
+                    .replace("%you", "you"));
         }
     }
 
@@ -160,7 +169,8 @@ public class Shop {
                     .replace("%amount", String.valueOf(stockAmount))
                     .replace("%item", materialName)
                     .replace("%seller", player.getName())
-                    .replace("%price", formatedBalance));
+                    .replace("%price", formatedBalance)
+                    .replace("%you", "you"));
         }
     }
 

@@ -1,6 +1,9 @@
 package com.Acrobot.ChestShop;
 
+import com.Acrobot.ChestShop.Cache.ShopCache;
+import com.Acrobot.ChestShop.Cache.UUIDCache;
 import com.Acrobot.ChestShop.Commands.ItemInfo;
+import com.Acrobot.ChestShop.Commands.ShopHistory;
 import com.Acrobot.ChestShop.Commands.Version;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.ConfigObject;
@@ -13,7 +16,7 @@ import com.Acrobot.ChestShop.Logging.FileWriterQueue;
 import com.Acrobot.ChestShop.Protection.MaskChest;
 import com.avaje.ebean.EbeanServer;
 import com.lennardf1989.bukkitex.Database;
-import org.bukkit.Material;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -42,9 +45,15 @@ public class ChestShop extends JavaPlugin {
 
     public static PluginManager pm;
 
+    private static UUIDCache uuidCache;
+    private static ShopCache shopCache;
+    private Long lastAutoSaveTime = System.currentTimeMillis() / 1000L;
+
     public void onEnable() {
         pm = getServer().getPluginManager();
         folder = getDataFolder();
+        uuidCache = new UUIDCache(this);
+        shopCache = new ShopCache(this);
 
         //Set up our config file!
         Config.setup(new ConfigObject());
@@ -65,12 +74,27 @@ public class ChestShop extends JavaPlugin {
         //Register our commands!
         getCommand("iteminfo").setExecutor(new ItemInfo());
         getCommand("csVersion").setExecutor(new Version());
+        getCommand("shophistory").setExecutor(new ShopHistory());
+
+        //Repeatedly save player cache
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+                long unixTime = System.currentTimeMillis() / 1000L;
+                if (lastAutoSaveTime + 300 < unixTime) {
+                    lastAutoSaveTime = unixTime;
+                    uuidCache.saveData();
+                    shopCache.saveData();
+                }
+            });
+        }, 20, 20 * 10);
 
         System.out.println('[' + getPluginName() + "] version " + getVersion() + " initialized!");
     }
 
     public void onDisable() {
         System.out.println('[' + getPluginName() + "] version " + getVersion() + " shutting down!");
+        uuidCache.saveData();
+        shopCache.saveData();
     }
 
     //////////////////    REGISTER EVENTS & SCHEDULER    ///////////////////////////
@@ -79,6 +103,7 @@ public class ChestShop extends JavaPlugin {
         registerEvent(Event.Type.BLOCK_BREAK, blockBreak);
         registerEvent(Event.Type.BLOCK_PLACE, new blockPlace());
         registerEvent(Event.Type.SIGN_CHANGE, new signChange());
+        registerEvent(Event.Type.PLAYER_LOGIN, new playerLogin());
         registerEvent(Event.Type.PLAYER_INTERACT, new playerInteract(), Event.Priority.Highest);
         registerEvent(Event.Type.PLUGIN_ENABLE, new pluginEnable());
         registerEvent(Event.Type.PLUGIN_DISABLE, new pluginDisable());
@@ -154,6 +179,14 @@ public class ChestShop extends JavaPlugin {
 
     public static EbeanServer getDB() {
         return DB;
+    }
+
+    public static UUIDCache getUUIDCache() {
+        return uuidCache;
+    }
+
+    public static ShopCache getShopCache() {
+        return shopCache;
     }
 
     public static ArrayList getDependencies() {

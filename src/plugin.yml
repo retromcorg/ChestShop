@@ -24,6 +24,10 @@ commands:
     description: Shows the ChestShop's version
     usage: /<command>
 
+  shophistory:
+    description: Shows a ChestShop owner the transaction history of their shops
+    usage: /<command> [page]
+
 permissions:
   ChestShop.*:
     description: Gives access to all ChestShop permissions

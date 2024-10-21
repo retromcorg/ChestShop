@@ -12,14 +12,14 @@ import java.util.regex.Pattern;
  */
 public class uSign {
     private static final Pattern[] patterns = { // patterns for chest shop
-            Pattern.compile("^$|^\\w.+$"),
+            Pattern.compile("^$|^[#\\w].+$"),
             Pattern.compile("[0-9]+"),
             Pattern.compile(".+"),
             Pattern.compile("[\\w :]+")
     };
 
     private static final Pattern[] redstoneSignPatterns = { // patterns for redstone sign
-            Pattern.compile("^$|^\\w.+$"),
+            Pattern.compile("^$|^[#\\w].+$"),
             Pattern.compile("^$"), // Requires an empty string
             Pattern.compile(".+"),
             Pattern.compile("^\\[Activate\\]$") // Requires '[Activate]'

@@ -14,6 +14,7 @@ public enum Property {
     LOG_TO_FILE(false, "If true, plugin will log transactions in its own file"),
     LOG_TO_CONSOLE(true, "Do you want ChestShop's messages to show up in console?"),
     LOG_TO_DATABASE(false, "If true, plugin will log transactions in EBean database"),
+    LOG_TO_CSV(false, "If true, plugin will log transactions in a CSV file for each shop owner"),
     GENERATE_STATISTICS_PAGE(false, "If true, plugin will generate shop statistics webpage."),
     STATISTICS_PAGE_PATH("plugins/ChestShop/website.html", "Where should your generated website be saved?"),
     RECORD_TIME_TO_LIVE(600, "How long should transaction information be stored?"),
