@@ -59,9 +59,17 @@ public class ShopHistory implements CommandExecutor {
                 }
             }
         }
+
+        if (page < 1) {
+            sender.sendMessage(ChatColor.RED + Language.INVALID_PAGE_NUMBER.toString());
+            sender.sendMessage(ChatColor.RED + Language.INVALID_USAGE.toString());
+            return true;
+        }
+
         UUID uuid = ChestShop.getUUIDCache().getUUIDFromUsername(playerName);
         if (uuid == null) {
             sender.sendMessage(ChatColor.RED + Language.PLAYER_NOT_FOUND.toString().replace("%player%", playerName));
+            sender.sendMessage(ChatColor.RED + Language.INVALID_USAGE_ADMIN.toString());
             return true;
         }
         playerName = ChestShop.getUUIDCache().getUsernameFromUUID(uuid);
@@ -108,6 +116,7 @@ public class ShopHistory implements CommandExecutor {
         }
         else {
             sender.sendMessage(ChatColor.RED + Language.INVALID_PAGE_NUMBER.toString());
+            sender.sendMessage(ChatColor.RED + Language.INVALID_USAGE.toString());
         }
         return true;
     }
