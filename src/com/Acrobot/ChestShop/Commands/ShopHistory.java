@@ -6,6 +6,7 @@ import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Transaction;
+import com.Acrobot.ChestShop.Economy;
 import com.Acrobot.ChestShop.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -88,7 +89,7 @@ public class ShopHistory implements CommandExecutor {
                 if (entry.getItemID() == 0 && entry.getItemDurability() == 0 && entry.getAmount() == 0) {
                     message = Config.getLocal(Language.SOMEBODY_ACTIVATED_YOUR_SIGN)
                             .replace("%buyer", ChestShop.getUUIDCache().getUsernameFromUUID(entry.getShopUser()))
-                            .replace("%price", "$" + entry.getPrice());
+                            .replace("%price", Economy.formatBalance(entry.getPrice()));
                     message = !playerName.equalsIgnoreCase(sender.getName()) ?
                             message.replace("%your", playerName + "'s") : message.replace("%your", "your");
                 } else {
@@ -97,7 +98,7 @@ public class ShopHistory implements CommandExecutor {
                             .replace("%buyer", ChestShop.getUUIDCache().getUsernameFromUUID(entry.getShopUser()))
                             .replace("%amount", String.valueOf(entry.getAmount()))
                             .replace("%item", new ItemStack(entry.getItemID()).getType().name())
-                            .replace("%price", "$" + entry.getPrice());
+                            .replace("%price", Economy.formatBalance(entry.getPrice()));
                     message = !playerName.equalsIgnoreCase(sender.getName()) ?
                             message.replace("%you", playerName) : message.replace("%you", "you");
                 }
