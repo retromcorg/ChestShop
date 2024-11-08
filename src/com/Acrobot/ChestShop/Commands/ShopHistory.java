@@ -105,6 +105,9 @@ public class ShopHistory implements CommandExecutor {
                 sender.sendMessage(message);
             }
         }
+        else {
+            sender.sendMessage(ChatColor.RED + Language.INVALID_PAGE_NUMBER.toString());
+        }
         return true;
     }
 }

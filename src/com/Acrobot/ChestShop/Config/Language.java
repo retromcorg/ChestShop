@@ -50,7 +50,8 @@ public enum Language {
 
     HISTORY_PAGE_X("Shop History: Page &c%page% &fof &c%pagecount%"),
     HISTORY_DISABLED("This feature is disabled, please enable LOG_TO_CSV"),
-    NO_ENTRIES_IN_HISTORY("There are no entries in the transaction history!");
+    NO_ENTRIES_IN_HISTORY("There are no entries in the transaction history!"),
+    INVALID_PAGE_NUMBER("You entered an invalid page number!");
 
     private final String text;
 
