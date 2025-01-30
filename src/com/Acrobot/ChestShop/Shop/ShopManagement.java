@@ -99,7 +99,7 @@ public class ShopManagement {
         if (Config.getBoolean(Property.SHOW_TRANSACTION_INFORMATION_OWNER)) {
             sendMessageToOwner(Config.getLocal(Language.SOMEBODY_ACTIVATED_YOUR_SIGN)
                     .replace("%buyer", playerName)
-                    .replace("%your", "your")
+                    .replace("%player", "your")
                     .replace("%price", formattedPrice), owner);
         }
 

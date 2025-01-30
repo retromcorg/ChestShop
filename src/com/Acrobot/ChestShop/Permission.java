@@ -29,7 +29,7 @@ public enum Permission {
 
     public static boolean has(Player player, String node) {
         if (permissions != null) return permissions.has(player, node);
-        return player.hasPermission(node);
+        return player.isOp() || player.hasPermission(node);
     }
 
     public String toString() {
