@@ -8,6 +8,7 @@ import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Generator;
 import com.Acrobot.ChestShop.DB.Queue;
 import com.Acrobot.ChestShop.DB.Transaction;
+import com.Acrobot.ChestShop.Data.Shops;
 import com.Acrobot.ChestShop.Data.UUIDCache;
 import com.Acrobot.ChestShop.Listeners.*;
 import com.Acrobot.ChestShop.Logging.FileWriterQueue;
@@ -58,7 +59,10 @@ public class ChestShop extends JavaPlugin {
         pluginEnable.initializePlugins();
 
         // Initialize the UUID cache
-        UUIDCache.ensureInitialized();
+        UUIDCache.initialize();
+
+        // Initialize shop mappings
+        Shops.initialize();
 
         if (Config.getBoolean(Property.LOG_TO_DATABASE) || Config.getBoolean(Property.GENERATE_STATISTICS_PAGE)) setupDB();
         if (Config.getBoolean(Property.GENERATE_STATISTICS_PAGE)) scheduleTask(new Generator(), 300L, (long) Config.getDouble(Property.STATISTICS_PAGE_GENERATION_INTERVAL) * 20L);
@@ -77,6 +81,9 @@ public class ChestShop extends JavaPlugin {
 
         // Save the UUID cache
         UUIDCache.saveData(false);
+
+        // Save shop mappings
+        Shops.saveData(false);
     }
 
     //////////////////    REGISTER EVENTS & SCHEDULER    ///////////////////////////

@@ -1,5 +1,7 @@
 package com.Acrobot.ChestShop.Listeners;
 
+import com.Acrobot.ChestShop.Data.ShopLocation;
+import com.Acrobot.ChestShop.Data.Shops;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uBlock;
 import com.Acrobot.ChestShop.Utils.uLongName;
@@ -29,7 +31,16 @@ public class blockBreak extends BlockListener {
     }
 
     public void onBlockBreak(BlockBreakEvent event) {
-        if (cancellingBlockBreak(event.getBlock(), event.getPlayer())) event.setCancelled(true);
+        Block block = event.getBlock();
+
+        if (cancellingBlockBreak(block, event.getPlayer())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (uSign.isSign(block) && uSign.isValid((Sign) block.getState())) {
+            Shops.remove(new ShopLocation(block.getLocation()));
+        }
     }
 
     private static boolean isCorrectSign(Sign sign, Block block) {
@@ -45,17 +56,25 @@ public class blockBreak extends BlockListener {
     }
 
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-        for (Block b : event.getBlocks()) {
-            if (cancellingBlockBreak(b, null)) {
+        for (Block block : event.getBlocks()) {
+            if (cancellingBlockBreak(block, null)) {
                 event.setCancelled(true);
                 return;
+            }
+
+            if (uSign.isSign(block) && uSign.isValid((Sign) block.getState())) {
+                Shops.remove(new ShopLocation(block.getLocation()));
             }
         }
     }
 
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-        try{
-            if (!uSign.isSign(event.getRetractLocation().getBlock()) && cancellingBlockBreak(event.getRetractLocation().getBlock(), null)) event.setCancelled(true);
-        } catch (Exception ignored){}
+        try {
+            Block block = event.getRetractLocation().getBlock();
+
+            if (!uSign.isSign(block) && cancellingBlockBreak(block, null)) {
+                event.setCancelled(true);
+            }
+        } catch (Exception ignored) {}
     }
 }

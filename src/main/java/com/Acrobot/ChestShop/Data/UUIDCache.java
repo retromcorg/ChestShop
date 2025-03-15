@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * This class is used to lookup UUIDs from usernames and vice versa.
+ * This class stores mappings of a player's {@link UUID} to their username
+ * and can be used for lookup operations.
  *
  * @author zavdav
  */
@@ -24,7 +25,7 @@ public final class UUIDCache {
 
     private UUIDCache() {}
 
-    public static void ensureInitialized() {}
+    public static void initialize() {}
 
     static {
         cacheFile = new File(ChestShop.folder, "uuidcache.json");
