@@ -8,12 +8,13 @@ import com.Acrobot.ChestShop.Config.Property;
 import com.Acrobot.ChestShop.DB.Generator;
 import com.Acrobot.ChestShop.DB.Queue;
 import com.Acrobot.ChestShop.DB.Transaction;
+import com.Acrobot.ChestShop.Data.Shops;
+import com.Acrobot.ChestShop.Data.UUIDCache;
 import com.Acrobot.ChestShop.Listeners.*;
 import com.Acrobot.ChestShop.Logging.FileWriterQueue;
 import com.Acrobot.ChestShop.Protection.MaskChest;
 import com.avaje.ebean.EbeanServer;
 import com.lennardf1989.bukkitex.Database;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -57,6 +58,12 @@ public class ChestShop extends JavaPlugin {
 
         pluginEnable.initializePlugins();
 
+        // Initialize the UUID cache
+        UUIDCache.initialize();
+
+        // Initialize shop mappings
+        Shops.initialize();
+
         if (Config.getBoolean(Property.LOG_TO_DATABASE) || Config.getBoolean(Property.GENERATE_STATISTICS_PAGE)) setupDB();
         if (Config.getBoolean(Property.GENERATE_STATISTICS_PAGE)) scheduleTask(new Generator(), 300L, (long) Config.getDouble(Property.STATISTICS_PAGE_GENERATION_INTERVAL) * 20L);
         if (Config.getBoolean(Property.LOG_TO_FILE)) scheduleTask(new FileWriterQueue(), 201L, 201L);
@@ -71,6 +78,12 @@ public class ChestShop extends JavaPlugin {
 
     public void onDisable() {
         System.out.println('[' + getPluginName() + "] version " + getVersion() + " shutting down!");
+
+        // Save the UUID cache
+        UUIDCache.saveData(false);
+
+        // Save shop mappings
+        Shops.saveData(false);
     }
 
     //////////////////    REGISTER EVENTS & SCHEDULER    ///////////////////////////
@@ -79,6 +92,7 @@ public class ChestShop extends JavaPlugin {
         registerEvent(Event.Type.BLOCK_BREAK, blockBreak);
         registerEvent(Event.Type.BLOCK_PLACE, new blockPlace());
         registerEvent(Event.Type.SIGN_CHANGE, new signChange());
+        registerEvent(Event.Type.PLAYER_LOGIN, new playerLogin(), Event.Priority.Monitor);
         registerEvent(Event.Type.PLAYER_INTERACT, new playerInteract(), Event.Priority.Highest);
         registerEvent(Event.Type.PLUGIN_ENABLE, new pluginEnable());
         registerEvent(Event.Type.PLUGIN_DISABLE, new pluginDisable());

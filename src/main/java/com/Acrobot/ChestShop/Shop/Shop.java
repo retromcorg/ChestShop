@@ -2,19 +2,25 @@ package com.Acrobot.ChestShop.Shop;
 
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Chests.ChestObject;
-import com.Acrobot.ChestShop.Chests.MinecraftChest;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
+import com.Acrobot.ChestShop.Data.ShopLocation;
+import com.Acrobot.ChestShop.Data.Shops;
+import com.Acrobot.ChestShop.Data.UUIDCache;
 import com.Acrobot.ChestShop.Economy;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uInventory;
+import com.Acrobot.ChestShop.Utils.uLongName;
 import com.Acrobot.ChestShop.Utils.uSign;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -30,6 +36,7 @@ public class Shop {
     public final String owner;
 
     public final World world;
+    public final Location signLocation;
 
     public Shop(ChestObject chest, boolean buy, Sign sign, ItemStack... itemStacks) {
         this.stock = itemStacks[0];
@@ -40,6 +47,7 @@ public class Shop {
         this.owner = sign.getLine(0);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
         this.world = sign.getWorld(); //Multi-world Support
+        this.signLocation = sign.getBlock().getLocation();
     }
 
     public void buy(Player player) {
@@ -47,6 +55,12 @@ public class Shop {
             player.sendMessage(Config.getLocal(Language.NO_CHEST_DETECTED));
             return;
         }
+
+        UUID uuid = UUIDCache.lookupUUID(uLongName.getName(owner));
+        if (uuid != null) {
+            Shops.put(new ShopLocation(signLocation), uuid);
+        }
+
         if (buyPrice == -1) {
             player.sendMessage(Config.getLocal(Language.NO_BUYING_HERE));
             return;
@@ -108,6 +122,12 @@ public class Shop {
             player.sendMessage(Config.getLocal(Language.NO_CHEST_DETECTED));
             return;
         }
+
+        UUID uuid = UUIDCache.lookupUUID(uLongName.getName(owner));
+        if (uuid != null) {
+            Shops.put(new ShopLocation(signLocation), uuid);
+        }
+
         if (sellPrice == -1) {
             player.sendMessage(Config.getLocal(Language.NO_SELLING_HERE));
             return;

@@ -5,11 +5,15 @@ import com.Acrobot.ChestShop.Chests.MinecraftChest;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
+import com.Acrobot.ChestShop.Data.ShopLocation;
+import com.Acrobot.ChestShop.Data.Shops;
+import com.Acrobot.ChestShop.Data.UUIDCache;
 import com.Acrobot.ChestShop.Economy;
 import com.Acrobot.ChestShop.Items.Items;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uBlock;
+import com.Acrobot.ChestShop.Utils.uLongName;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,6 +25,8 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -73,6 +79,11 @@ public class ShopManagement {
         if (!HasRedstoneTorch(attachedBlock)) {
             player.sendMessage(Config.getLocal(Language.SIGN_NOT_CONNECTED));
             return;
+        }
+
+        UUID uuid = UUIDCache.lookupUUID(uLongName.getName(owner));
+        if (uuid != null) {
+            Shops.put(new ShopLocation(sign.getBlock().getLocation()), uuid);
         }
 
         String account = getOwnerAccount(owner);

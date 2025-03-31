@@ -3,6 +3,8 @@ package com.Acrobot.ChestShop.Listeners;
 import com.Acrobot.ChestShop.Config.Config;
 import com.Acrobot.ChestShop.Config.Language;
 import com.Acrobot.ChestShop.Config.Property;
+import com.Acrobot.ChestShop.Data.ShopLocation;
+import com.Acrobot.ChestShop.Data.Shops;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Protection.Plugins.Default;
 import com.Acrobot.ChestShop.Shop.ShopManagement;
@@ -126,6 +128,7 @@ public class playerInteract extends PlayerListener {
             inventory = new InventoryLargeChest(player.getName() + "'s Shop", inventory, ((CraftInventory) chest.getInventory()).getInventory());
         }
 
+        Shops.put(new ShopLocation(block.getLocation()), player.getUniqueId());
         ((CraftPlayer) player).getHandle().a(inventory); //Show inventory on the screen
     }
 }
